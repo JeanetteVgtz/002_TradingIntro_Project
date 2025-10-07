@@ -48,11 +48,9 @@ def load_data(filepath: str) -> pd.DataFrame:
     # Usar timestamp como índice
     df = df.set_index("timestamp")
 
-    # Guardar limpio en CSV ascendente
-    df.to_csv("data/BTCUSDT_hourly_ASC.csv")
-
     return df
 
 # Ejemplo de uso:
-data = load_data("data/Binance_BTCUSDT_1h.csv")
+df = load_data("data/Binance_BTCUSDT_1h.csv")
+data = df
 print(data.head())
