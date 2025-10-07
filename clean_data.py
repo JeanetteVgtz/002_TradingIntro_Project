@@ -22,12 +22,16 @@ df["timestamp"] = pd.to_datetime(df["timestamp"], format="%Y-%m-%d %H:%M:%S", er
 # Eliminar filas inválidas (si alguna no se pudo convertir)
 df = df.dropna(subset=["timestamp"])
 
-# Guardar ASC (viejo→nuevo)
+# Guardar ASC
 df.sort_values("timestamp", ascending=True).to_csv("data/BTCUSDT_hourly_ASC.csv", index=False)
 
-# Guardar DESC (nuevo→viejo)
-df.sort_values("timestamp", ascending=False).to_csv("data/BTCUSDT_hourly.csv", index=False)
-
-print("✅ Limpieza terminada")
 print("Filas:", len(df))
 print("Rango de fechas:", df['timestamp'].min(), "→", df['timestamp'].max())
+
+asc = pd.read_csv("data/BTCUSDT_hourly_ASC.csv")
+
+print("DATA")
+print(asc.head(5))
+print("...")
+print(asc.tail(5))
+
