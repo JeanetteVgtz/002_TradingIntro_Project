@@ -1,37 +1,58 @@
 import pandas as pd
 
-# Leer el archivo saltando la primera fila basura
-df = pd.read_csv("data/Binance_BTCUSDT_1h.csv", skiprows=1)
+def load_data(filepath: str) -> pd.DataFrame:
+    """
+    Load Bitcoin hourly price data from CSV.
+    - Skips first junk row (Binance format).
+    - Keeps only OHLCV columns.
+    - Converts timestamp to datetime.
+    - Drops NaNs.
+    - Sorts by date ascending.
+    - Saves clean data to 'data/BTCUSDT_hourly_ASC.csv'.
+    """
+    # Leer el CSV, saltando la primera fila basura
+    df = pd.read_csv(filepath, skiprows=1)
 
-# Nos quedamos solo con las columnas que ocupamos
-df = df[["Date","Open","High","Low","Close","Volume BTC"]]
+    # Normalizar encabezados
+    df.columns = [c.strip() for c in df.columns]
 
-# Renombrar columnas
-df = df.rename(columns={
-    "Date": "timestamp",
-    "Open": "open",
-    "High": "high",
-    "Low": "low",
-    "Close": "close",
-    "Volume BTC": "volume"
-})
+    # Detectar columna de volumen (BTC o USDT)
+    volume_col = None
+    for cand in ["Volume USDT", "Volume BTC", "Volume"]:
+        if cand in df.columns:
+            volume_col = cand
+            break
 
-# Convertir a datetime con el formato correcto
-df["timestamp"] = pd.to_datetime(df["timestamp"], format="%Y-%m-%d %H:%M:%S", errors="coerce")
+    if volume_col is None:
+        raise ValueError(f"No encontré columna de volumen en {df.columns}")
 
-# Eliminar filas inválidas (si alguna no se pudo convertir)
-df = df.dropna(subset=["timestamp"])
+    # Seleccionar y renombrar columnas
+    df = df[["Date", "Open", "High", "Low", "Close", volume_col]].rename(columns={
+        "Date": "timestamp",
+        "Open": "open",
+        "High": "high",
+        "Low": "low",
+        "Close": "close",
+        volume_col: "volume"
+    })
 
-# Guardar ASC
-df.sort_values("timestamp", ascending=True).to_csv("data/BTCUSDT_hourly_ASC.csv", index=False)
+    # Convertir a datetime
+    df["timestamp"] = pd.to_datetime(df["timestamp"], errors="coerce")
 
-print("Filas:", len(df))
-print("Rango de fechas:", df['timestamp'].min(), "→", df['timestamp'].max())
+    # Eliminar filas con NaN
+    df = df.dropna()
 
-asc = pd.read_csv("data/BTCUSDT_hourly_ASC.csv")
+    # Ordenar ascendente por fecha
+    df = df.sort_values("timestamp")
 
-print("DATA")
-print(asc.head(5))
-print("...")
-print(asc.tail(5))
+    # Usar timestamp como índice
+    df = df.set_index("timestamp")
 
+    # Guardar limpio en CSV ascendente
+    df.to_csv("data/BTCUSDT_hourly_ASC.csv")
+
+    return df
+
+# Ejemplo de uso:
+data = load_data("data/Binance_BTCUSDT_1h.csv")
+print(data.head())
