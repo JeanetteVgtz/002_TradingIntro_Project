@@ -10,9 +10,8 @@ from metrics import calculate_all_metrics    # métricas
 from clean_data import df as data            # datos limpios
 
 
-# -------------------------------
-# Split temporal
-# -------------------------------
+
+# Split 
 def split_train_test(df, train_ratio=0.6, test_ratio=0.2, val_ratio=0.2):
     n = len(df)
     if n < 10:
@@ -30,9 +29,8 @@ def split_train_test(df, train_ratio=0.6, test_ratio=0.2, val_ratio=0.2):
     return df_tr, df_te, df_va
 
 
-# -------------------------------
 # Objective (maximize Calmar)
-# -------------------------------
+
 def objective(trial, df):
     # --- Hyperparams ---
     rsi_period      = trial.suggest_int('rsi_period', 20, 76)
@@ -98,9 +96,9 @@ def objective(trial, df):
     return float(calmar)
 
 
-# -------------------------------
+
 # Evaluar con params ganadores
-# -------------------------------
+
 def evaluate_on_df(df, params):
     sig = craft_signals(
         df,
@@ -127,9 +125,9 @@ def evaluate_on_df(df, params):
     return bt_df, cash_end, m
 
 
-# -------------------------------
-# Entrenamiento + resumen 
-# -------------------------------
+
+# Resumen y entrenamiento
+
 if __name__ == "__main__":
     optuna.logging.set_verbosity(optuna.logging.INFO)
 
@@ -158,9 +156,9 @@ if __name__ == "__main__":
     print(f"Final portfolio (test): {cash_test:,.2f}")
 
 
-# -------------------------------
+
 # Guardar / cargar resumen
-# -------------------------------
+
 def save_optuna_summary(study, cash_test, metrics_test, path="outputs/optuna_summary.json"):
     os.makedirs(os.path.dirname(path), exist_ok=True)
     safe_metrics = {}

@@ -7,9 +7,9 @@ import pandas as pd
 # Datos horarios 24/7 (BTC)
 HOURS_PER_YEAR = 365 * 24
 
-# -------------------------
+
 # Utilidades internas
-# -------------------------
+
 def _as_series(x: pd.Series | pd.DataFrame) -> pd.Series:
     s = x if isinstance(x, pd.Series) else x.iloc[:, 0]
     s = pd.to_numeric(s, errors="coerce").replace([np.inf, -np.inf], np.nan).dropna()
@@ -26,9 +26,9 @@ def _gross_return(equity_df: pd.DataFrame) -> float:
         return np.nan
     return float(eq.iloc[-1] / eq.iloc[0] - 1.0)
 
-# -------------------------
-# Núcleo de métricas
-# -------------------------
+
+# Metricas individuales
+
 def drawdown_stats(equity: pd.Series) -> tuple[float, pd.Series]:
     """Devuelve (mdd_negativo, serie_drawdown)."""
     eq = _as_series(equity)
@@ -90,9 +90,9 @@ def hit_rate(port_hist: pd.DataFrame) -> float:
     tot = w + l
     return (w / tot) if tot > 0 else np.nan
 
-# -------------------------
-# API pública
-# -------------------------
+
+# Métricas completas
+
 def calculate_all_metrics(
     portfolio_hist: pd.DataFrame,
     risk_free_rate: float = 0.0,
