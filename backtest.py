@@ -21,7 +21,7 @@ def execute_backtest(
     start_cap: float = 1_000_000,
 ):
     """
-    Backtest según el esquema solicitado:
+    Backtest:
     - CASH inicial
     - Por barra: revisar señal; abrir LONG/SHORT si hay efectivo suficiente
     - Cerrar posiciones por SL/TP
@@ -45,9 +45,9 @@ def execute_backtest(
         pnl_this_step = 0.0
         closed_any = False
 
-        # =========================
+    
         # CERRAR POSICIONES (SL / TP)
-        # =========================
+       
         # LONGS
         for pos in active_long.copy():
             if price >= pos.tp or price <= pos.sl:
@@ -79,9 +79,9 @@ def execute_backtest(
                 pnl_this_step += pnl_realized
                 closed_any = True
 
-        # =========================
+      
         # ABRIR OPERACIONES
-        # =========================
+     
         # LONG
         if signal == 1:
             cost = price * lot_size * (1 + comision)
@@ -112,9 +112,9 @@ def execute_backtest(
                     )
                 )
 
-        # =========================
+  
         # VALUACIÓN DEL PORTAFOLIO
-        # =========================
+       
         val = cash
         # valor de longs abiertos al precio actual
         for pos in active_long:
@@ -126,9 +126,9 @@ def execute_backtest(
         portfolio_values.append(val)
         trade_pnls.append(pnl_this_step if closed_any else 0.0)
 
-    # =========================
-    # CIERRE FORZADO FINAL
-    # =========================
+
+    # CIERRE FINAL
+ 
     if len(df) > 0:
         last_price = float(df.iloc[-1][col_price])
 

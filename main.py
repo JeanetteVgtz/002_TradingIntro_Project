@@ -2,10 +2,9 @@
 Main pipeline orchestrator - BTC strategy end-to-end
 - Carga datos limpios
 - Genera señales (RSI + MACD + Bollinger, 2/3)
-- Ejecuta backtest
+- Ejecuta backtest con parametros optimizados
 - Calcula métricas
 - Genera gráficas
-- (Opcional) Muestra resultados de Optuna previamente guardados y plots de TEST
 """
 
 from __future__ import annotations
@@ -22,16 +21,8 @@ from plotting import (
     plot_portfolio_vs_benchmark,
     plot_drawdown,
     plot_price_with_signals,
-    plot_trade_pnl,
     plot_returns_hist,
 )
-
-# --- optuna helpers (solo lectura de resultados ya guardados) ---
-try:
-    from opt import load_optuna_summary, split_train_test, evaluate_on_df
-    _HAS_OPT = True
-except Exception:
-    _HAS_OPT = False
 
 
 def _print_metrics(title: str, metrics: dict):
@@ -61,7 +52,7 @@ def main():
         df_sig,
         stop_thr=0.04414069466687109,      
         tp_thr=0.13703959474772304,       
-        lot_size=2,       
+        lot_size=3,    # n_shares   
         comision=0.125/100, 
         col_price="close",
         start_cap=1_000_000,

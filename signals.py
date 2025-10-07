@@ -28,7 +28,7 @@ def craft_signals(
     Parámetros
     ----------
     df : pd.DataFrame
-        Debe contener al menos la columna `price_col` (por defecto 'close').
+        Debe contener al menos la columna "Close"
     price_col : str
         Nombre de la columna de precios a usar.
     rsi_len, rsi_hi, rsi_lo : int/float
@@ -72,9 +72,9 @@ def craft_signals(
     out.loc[out["rsi_val"] < rsi_lo, "vote_rsi"]  = 1
     out.loc[out["rsi_val"] > rsi_hi, "vote_rsi"]  = -1
 
-    # ======================
+
     # Indicador: MACD
-    # ======================
+
     macd_obj = ta.trend.MACD(
         close=out[price_col],
         window_fast=macd_fast,
@@ -88,9 +88,8 @@ def craft_signals(
     out.loc[out["macd_val"] > out["macd_sig"], "vote_macd"] = 1
     out.loc[out["macd_val"] < out["macd_sig"], "vote_macd"] = -1
 
-    # ======================
     # Indicador: Bollinger Bands
-    # ======================
+
     bb = ta.volatility.BollingerBands(close=out[price_col], window=bb_len, window_dev=bb_dev)
     out["bb_mid"] = bb.bollinger_mavg()
     out["bb_hi"]  = bb.bollinger_hband()
@@ -100,9 +99,9 @@ def craft_signals(
     out.loc[out[price_col] < out["bb_lo"],  "vote_bb"] = 1
     out.loc[out[price_col] > out["bb_hi"],  "vote_bb"] = -1
 
-    # ======================
+    # Señal final combinada
     # 2-de-3
-    # ======================
+ 
     votes = out["vote_rsi"] + out["vote_macd"] + out["vote_bb"]
 
     out["signal"] = 0
@@ -118,9 +117,8 @@ def craft_signals(
     return out
 
 
-# =========================
 # Helpers de conteo de señales
-# =========================
+
 def signal_summary(df: pd.DataFrame, signal_col: str = "signal") -> dict:
     """
     Devuelve:
@@ -155,10 +153,7 @@ def print_signal_summary(df: pd.DataFrame, signal_col: str = "signal") -> None:
     print(f"Señales (barras) -> short: {t['short']}, hold: {t['hold']}, long: {t['long']}")
     print(f"Entradas         -> long: {e['long']}, short: {e['short']}")
 
-# =========================
-# 
-# =========================
+
 if __name__ == "__main__":
-    # Usa el df que ya importaste arriba: `from clean_data import df as data`
     sig = craft_signals(data)
     print_signal_summary(sig)

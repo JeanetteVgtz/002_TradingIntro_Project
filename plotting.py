@@ -6,9 +6,9 @@ import numpy as np
 import pandas as pd
 import matplotlib.pyplot as plt
 
-# ---------------------------------------------------------------------
-# Utilidades internas
-# ---------------------------------------------------------------------
+
+# Utilidades auxiliares
+
 def _asegura_dir(path: Optional[str]) -> None:
     if path:
         d = os.path.dirname(path)
@@ -16,10 +16,6 @@ def _asegura_dir(path: Optional[str]) -> None:
             os.makedirs(d, exist_ok=True)
 
 def _save_fig(save_path: Optional[str]) -> None:
-    """
-    Guarda la figura (si hay save_path) y muestra la ruta absoluta en consola.
-    Luego intenta mostrar y cierra la figura para evitar fugas.
-    """
     if save_path:
         out = os.path.abspath(save_path)
         d = os.path.dirname(out)
@@ -45,9 +41,8 @@ def _serie_equity(x: pd.DataFrame | pd.Series) -> pd.Series:
         s = x
     return pd.to_numeric(s, errors="coerce").dropna()
 
-# ---------------------------------------------------------------------
 # 1) Estrategia vs Benchmark (buy & hold)
-# ---------------------------------------------------------------------
+
 def plot_portfolio_vs_benchmark(
     portfolio_history: pd.DataFrame | pd.Series,
     df: pd.DataFrame,
@@ -83,9 +78,8 @@ def plot_portfolio_vs_benchmark(
 
     _save_fig(save_path)
 
-# ---------------------------------------------------------------------
-# 2) Curva de drawdown
-# ---------------------------------------------------------------------
+# Curva de drawdown
+
 def plot_drawdown(
     equity: pd.DataFrame | pd.Series,
     title: str = "Drawdown de la estrategia",
@@ -105,9 +99,9 @@ def plot_drawdown(
 
     _save_fig(save_path)
 
-# ---------------------------------------------------------------------
-# 3) Precio con señales (flechas de compra/venta)
-# ---------------------------------------------------------------------
+
+# Precio con señales (flechas de compra/venta)
+
 def plot_price_with_signals(
     df: pd.DataFrame,
     price_col: str = "close",
@@ -138,9 +132,8 @@ def plot_price_with_signals(
     _save_fig(save_path)
 
 
-# ---------------------------------------------------------------------
-# 5) Histograma de retornos por barra
-# ---------------------------------------------------------------------
+# Histograma de retornos por barra
+
 def plot_returns_hist(
     bt_df: pd.DataFrame,
     bins: int = 50,
